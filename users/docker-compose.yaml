@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URI=mongodb
+      - ENV=production
+      - PORT=3001
+    volumes:
+      - /app/node_modules
+      - .:/app
+
+  mongodb:
+    restart: unless-stopped
+    image: mongo
+    volumes:
+      - users-db:/data/db/users
+    ports:
+      - "27017:27017"
+
+volumes:
+  users-db:

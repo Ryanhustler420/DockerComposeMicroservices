@@ -8,6 +8,10 @@ services:
     restart: always
     ports:
       - "3001:3001"
+    environment:
+      - MONGO_URI=mongodb
+      - ENV=production
+      - PORT=3001
 
   posts:
     build:
@@ -16,6 +20,10 @@ services:
     restart: always
     ports:
       - "3002:3002"
+    environment:
+      - MONGO_URI=mongodb
+      - ENV=production
+      - PORT=3002
 
   comments:
     build:
@@ -24,6 +32,10 @@ services:
     restart: always
     ports:
       - "3003:3003"
+    environment:
+      - MONGO_URI=mongodb
+      - ENV=production
+      - PORT=3003
 
   nginx:
     image: nginx:latest
@@ -35,3 +47,14 @@ services:
       - users
       - posts
       - comments
+
+  mongodb:
+    restart: unless-stopped
+    image: mongo
+    volumes:
+      - fake-json-db:/data/db/fake-json
+    ports:
+      - "27017:27017"
+
+volumes:
+  fake-json-db:

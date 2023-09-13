@@ -32,3 +32,8 @@
 
 - Express
 - Axios
+
+### Docker Compose
+
+- `docker compose up --build`
+- `docker compose down`
