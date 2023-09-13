@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "3004:3004"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGO_URI=mongodb
+      - ENV=production
+      - PORT=3004
+    volumes:
+      - /app/node_modules
+      - .:/app
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    restart: unless-stopped
+    image: mongo
+    volumes:
+      - votings-db:/data/db/votings
+    ports:
+      - "27017:27017"
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes: 
+      - redis-cache:/data
+
+volumes:
+  votings-db:
+  redis-cache:
+    driver: local

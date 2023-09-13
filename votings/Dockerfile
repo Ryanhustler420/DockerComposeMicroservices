@@ -4,7 +4,9 @@ ENV ENV=production
 
 # set your env here
 ENV MONGO_URI=dbpath
-ENV PORT=3003
+ENV PORT=3004
+ENV REDIS_HOST=localhost
+ENV REDIS_PORT=6379
 
 WORKDIR /app
 COPY package*.json .

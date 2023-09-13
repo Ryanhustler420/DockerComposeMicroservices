@@ -1,0 +1,19 @@
+{
+  "name": "votings",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js -L"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.5.0",
+    "express": "^4.18.2",
+    "ioredis": "^5.3.2",
+    "socket.io": "^4.7.2",
+    "socket.io-redis": "^6.1.1"
+  }
+}

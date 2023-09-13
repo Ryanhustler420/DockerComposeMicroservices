@@ -1,8 +1,9 @@
 FROM node:14-alpine
 
+ENV ENV=production
+
 # set your env here
 ENV MONGO_URI=dbpath
-ENV ENV=production
 ENV PORT=3002
 
 WORKDIR /app

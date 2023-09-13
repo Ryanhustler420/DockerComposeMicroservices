@@ -11,10 +11,11 @@
 
 ### Env Variables
 
-| Key  | Value       |
-| ---- | ----------- |
-| ENV  | development |
-| PORT | 3001        |
+| Key       | Value       |
+| --------- | ----------- |
+| MONGO_URI | mongodb     |
+| ENV       | development |
+| PORT      | 3001        |
 
 ### Npm
 

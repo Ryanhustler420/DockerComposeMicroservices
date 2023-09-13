@@ -12,6 +12,8 @@ services:
       - MONGO_URI=mongodb
       - ENV=production
       - PORT=3001
+    depends_on:
+      - mongodb
 
   posts:
     build:
@@ -24,6 +26,8 @@ services:
       - MONGO_URI=mongodb
       - ENV=production
       - PORT=3002
+    depends_on:
+      - mongodb
 
   comments:
     build:
@@ -36,6 +40,24 @@ services:
       - MONGO_URI=mongodb
       - ENV=production
       - PORT=3003
+    depends_on:
+      - mongodb
+
+  votings:
+    build:
+      dockerfile: Dockerfile
+      context: ./votings
+    restart: always
+    ports:
+      - "3004:3004"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MONGO_URI=mongodb
+      - ENV=production
+      - PORT=3004
+    depends_on:
+      - redis
 
   nginx:
     image: nginx:latest
@@ -46,6 +68,7 @@ services:
     depends_on:
       - users
       - posts
+      - votings
       - comments
 
   mongodb:
@@ -56,5 +79,15 @@ services:
     ports:
       - "27017:27017"
 
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes: 
+      - redis-cache:/data
+
 volumes:
   fake-json-db:
+  redis-cache:
+    driver: local
