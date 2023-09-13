@@ -1,4 +1,4 @@
-# Comments 💬
+# Users 👥
 
 **This service is responsible for managing users.**
 

@@ -1,4 +1,4 @@
-# Comments 💬
+# Posts 📃
 
 **This service is responsible for managing posts.**
 
