@@ -71,6 +71,21 @@ services:
       - votings
       - comments
 
+  prometheus:
+    image: prom/prometheus:v2.33.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --web.external-url=/prometheus/
+    depends_on:
+      - nginx
+
   mongodb:
     restart: unless-stopped
     image: mongo

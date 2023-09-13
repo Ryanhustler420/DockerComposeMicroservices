@@ -1,0 +1,6 @@
+global:
+  scrape_interval: 15s # How often Prometheus scrapes targets (adjust as needed)
+scrape_configs:
+  - job_name: "fake-json-app-services"
+    static_configs:
+      - targets: ["users:3001", "posts:3002", "comments:3003", "votings:3004"] # Replace with the hostname and port of your Node.js app

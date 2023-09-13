@@ -8,4 +8,5 @@
 | -------- | ------------- |
 | users    | ~ ^/users/    |
 | posts    | ~ ^/posts/    |
+| votings  | ~ ^/votings/  |
 | comments | ~ ^/comments/ |
