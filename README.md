@@ -4,8 +4,8 @@
 
 ### Entrypoints 🔗
 
-| Service  | Route             |
-| -------- | ----------------- |
-| users    | **~ ^/users/**    |
-| posts    | **~ ^/posts/**    |
-| comments | **~ ^/comments/** |
+| Service  | Route         |
+| -------- | ------------- |
+| users    | ~ ^/users/    |
+| posts    | ~ ^/posts/    |
+| comments | ~ ^/comments/ |
