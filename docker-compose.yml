@@ -83,8 +83,16 @@ services:
       - --web.console.libraries=/usr/share/prometheus/console_libraries
       - --web.console.templates=/usr/share/prometheus/consoles
       - --web.external-url=/prometheus/
-    depends_on:
-      - nginx
+
+  alertmanager:
+    image: prom/alertmanager:v0.23.0
+    ports:
+      - "9093:9093"
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --web.route-prefix=/alertmanager
+      - --web.external-url=http://alertmanager:9093/alertmanager
 
   mongodb:
     restart: unless-stopped
