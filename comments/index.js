@@ -1,3 +1,4 @@
+const kafkaWrapper = require('./kafka/kafka-wrapper');
 const prometheus = require('prom-client');
 const express = require("express");
 const axios = require("axios");
@@ -23,6 +24,14 @@ app.get("/comments", async (req, res) => {
   res.json(all_comments.data);
 });
 
+app.get("/comments/kafka/:message", async (req, res) => {
+  const { message } = req.params;
+  const producer = kafkaWrapper.kafka.producer();
+  await producer.connect();
+  await producer.send({ topic: 'comments', messages: [{ value: message }] });
+  res.json({ message });
+});
+
 app.get("/comments/post/:postid", async (req, res) => {
   const { postid } = req.params;
   const post_comments = await axios.get(`https://jsonplaceholder.typicode.com/comments?postId=${postid}`);
@@ -46,11 +55,27 @@ app.use((req, res, next) => {
   next();
 });
 
-const PORT = process.env.PORT || 3000;
+const start = async () => {
+  try {
+    kafkaWrapper.init("comments-api", ["kafka:9092"]);
+    const consumer = kafkaWrapper.kafka.consumer({ groupId: 'comments-api' });
+    await consumer.connect();
+    await consumer.subscribe({ topic: "posts" });
+    await consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        console.log(`Received message: ${message.value.toString()}`);
+      },
+    });
+  } catch(err) { console.error(err); }
 
-app.listen(PORT, () => {
-  console.log(`Server is up and listing on port ${PORT}`);
-});
+  const PORT = process.env.PORT || 3000;
+  const HOST = '0.0.0.0';
+  app.listen(PORT, HOST, () => {
+    console.log(`Server is on http://${HOST}:${PORT}`);
+  });
+};
+
+start();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

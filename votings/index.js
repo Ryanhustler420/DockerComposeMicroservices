@@ -3,6 +3,7 @@ const express = require("express");
 const socketIO = require("socket.io");
 const prometheus = require('prom-client');
 const redisAdapter = require("socket.io-redis");
+const kafkaWrapper = require('./kafka/kafka-wrapper');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +20,8 @@ const io = socketIO(server, { path: "/votings/socket" });
 io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
 
 io.on("connection", (socket) => {
+  console.log('An user connected');
+
   socket.on("chat message", (msg) => {
     io.emit("chat message", msg);
   });
@@ -52,11 +55,27 @@ app.use((req, res, next) => {
   next();
 });
 
-const PORT = process.env.PORT || 3000;
+const start = async () => {
+  try {
+    kafkaWrapper.init("votings-api", ["kafka:9092"]);
+    const consumer = kafkaWrapper.kafka.consumer({ groupId: 'votings-api' });
+    await consumer.connect();
+    await consumer.subscribe({ topic: "posts" });
+    await consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        console.log(`Received message: ${message.value.toString()}`);
+      },
+    });
+  } catch(err) { console.error(err); }
 
-server.listen(PORT, () => {
-  console.log(`Server is up and listing on port ${PORT}`);
-});
+  const PORT = process.env.PORT || 3000;
+  const HOST = '0.0.0.0';
+  server.listen(PORT, HOST, () => {
+    console.log(`Server is on http://${HOST}:${PORT}`);
+  });
+};
+
+start();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

@@ -1,3 +1,4 @@
+const kafkaWrapper = require('./kafka/kafka-wrapper');
 const prometheus = require('prom-client');
 const express = require("express");
 const axios = require('axios');
@@ -30,6 +31,14 @@ app.get("/users", async (req, res) => {
   res.json(all_users.data);
 });
 
+app.get("/users/kafka/:message", async (req, res) => {
+  const { message } = req.params;
+  const producer = kafkaWrapper.kafka.producer();
+  await producer.connect();
+  await producer.send({ topic: 'users', messages: [{ value: message }] });
+  res.json({ message });
+});
+
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   const user = await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
@@ -48,11 +57,27 @@ app.use((req, res, next) => {
   next();
 });
 
-const PORT = process.env.PORT || 3000;
+const start = async () => {
+  try {
+    kafkaWrapper.init("users-api", ["kafka:9092"]);
+    const consumer = kafkaWrapper.kafka.consumer({ groupId: 'users-api' });
+    await consumer.connect();
+    await consumer.subscribe({ topic: "posts" });
+    await consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        console.log(`Received message: ${message.value.toString()}`);
+      },
+    });
+  } catch(err) { console.error(err); }
 
-app.listen(PORT, () => {
-  console.log(`Server is up and listing on port ${PORT}`);
-});
+  const PORT = process.env.PORT || 3000;
+  const HOST = '0.0.0.0';
+  app.listen(PORT, HOST, () => {
+    console.log(`Server is on http://${HOST}:${PORT}`);
+  });
+};
+
+start();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

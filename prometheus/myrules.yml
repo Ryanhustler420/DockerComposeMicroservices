@@ -1,0 +1,13 @@
+groups:
+  - name: my-rules
+    rules:
+      - record: job:windows_os_physical_memory_free_bytes:avg_bytes
+        expr: avg without(instance)(windows_os_physical_memory_free_bytes/1024/1024)
+
+      - record: job:prometheus_http_requests_total:rate5m
+        expr: rate(prometheus_http_requests_total[5m])
+
+  - name: my-rules_new
+    rules:
+      - record: job:prometheus_http_requests_total:rate1m
+        expr: rate(prometheus_http_requests_total[1m])

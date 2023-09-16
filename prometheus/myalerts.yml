@@ -1,0 +1,13 @@
+groups:
+  - name: my-alerts
+    rules:
+      - alert: NodeExporterDown
+        expr: up{job="users"} == 1
+        # for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Your application down"
+          description: "Your App of instance {{ $labels.instance }} of job {{ $labels.job }} has stopped for some reason"
+          app_link: "http://localhost:8000/"
+          more: "Please check the application in your cluster"
