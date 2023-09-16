@@ -59,8 +59,9 @@ app.use((req, res, next) => {
 
 const start = async () => {
   try {
-    kafkaWrapper.init("users-api", ["kafka:9092"]);
-    const consumer = kafkaWrapper.kafka.consumer({ groupId: 'users-api' });
+    const groupId = "users-api";
+    kafkaWrapper.init(groupId, [process.env.KAFAK_1]);
+    const consumer = kafkaWrapper.kafka.consumer({ groupId });
     await consumer.connect();
     await consumer.subscribe({ topic: "posts" });
     await consumer.run({

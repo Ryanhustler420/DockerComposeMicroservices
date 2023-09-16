@@ -16,7 +16,7 @@ const counter = new prometheus.Counter({
   help: ':: Tells how many time a user asked for all the votings details',
 });
 
-const io = socketIO(server, { path: "/votings/socket" });
+const io = socketIO(server, { path: process.env.SOCKET_IO_PATH });
 io.adapter(redisAdapter({ host: process.env.REDIS_HOST, port: process.env.REDIS_PORT }));
 
 io.on("connection", (socket) => {
@@ -57,8 +57,9 @@ app.use((req, res, next) => {
 
 const start = async () => {
   try {
-    kafkaWrapper.init("votings-api", ["kafka:9092"]);
-    const consumer = kafkaWrapper.kafka.consumer({ groupId: 'votings-api' });
+    const groupId = "votings-api";
+    kafkaWrapper.init(groupId, [process.env.KAFAK_1]);
+    const consumer = kafkaWrapper.kafka.consumer({ groupId });
     await consumer.connect();
     await consumer.subscribe({ topic: "posts" });
     await consumer.run({

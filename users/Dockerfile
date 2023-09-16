@@ -3,6 +3,7 @@ FROM node:14-alpine
 ENV ENV=production
 
 # set your env here
+ENV KAFAK_1=kafka:9092
 ENV MONGO_URI=dbpath
 ENV PORT=3001
 
